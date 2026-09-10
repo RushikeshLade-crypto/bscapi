@@ -61,7 +61,11 @@ module.exports = async (req, res) => {
     const data = await response.json();
 
     if (data.status !== '1' && data.message !== 'No transactions found') {
-      return sendError(res, 502, 'Etherscan API error', { detail: data.message || data.result });
+      const hint =
+        data.message === 'NOTOK'
+          ? 'This usually means BSCSCAN_API_KEY is not a valid Etherscan-issued key. Keys from BscScan/Polygonscan/Arbiscan etc are no longer valid for the V2 API — generate a new key at https://etherscan.io/apidashboard and use that instead. New keys can take a few minutes to activate.'
+          : undefined;
+      return sendError(res, 502, 'Etherscan API error', { detail: data.result || data.message, hint });
     }
 
     sendJson(res, 200, {
