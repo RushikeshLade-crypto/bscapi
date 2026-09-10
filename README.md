@@ -78,8 +78,17 @@ Omit `token` (or set it to `"BNB"`) to send native BNB instead of a token.
      The public default (`bsc-dataseed.binance.org`) is rate-limited.
      Free options: [Ankr](https://www.ankr.com/rpc/bsc/),
      [NodeReal](https://nodereal.io), [GetBlock](https://getblock.io).
-   - `BSCSCAN_API_KEY` (required for `/api/transactions`) — free key from
-     [bscscan.com/myapikey](https://bscscan.com/myapikey).
+   - `BSCSCAN_API_KEY` (required for `/api/transactions`) — BscScan's old
+     standalone V1 API is deprecated. Etherscan now serves BSC and 60+
+     other EVM chains through one unified V2 API (selected via
+     `chainid=56` for BSC, already wired up in this repo).
+     **The key must be issued from etherscan.io itself** — sign in or
+     sign up at [etherscan.io](https://etherscan.io) and generate a key
+     at [etherscan.io/apidashboard](https://etherscan.io/apidashboard).
+     Old keys from BscScan (or Polygonscan/Arbiscan/etc) are **not**
+     valid for V2, even though the variable name here still says
+     `BSCSCAN_API_KEY` for backwards compatibility. New keys can take a
+     few minutes to activate after creation.
 
 4. **Deploy.** Vercel will pick up everything in `/api` automatically as
    serverless functions.
