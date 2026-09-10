@@ -1,0 +1,15 @@
+{
+  "name": "bep20-api",
+  "version": "1.0.0",
+  "description": "BEP20 / BNB Smart Chain wallet API (generate, balance, send, history) for Vercel serverless deployment",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "ethers": "^6.13.4"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
