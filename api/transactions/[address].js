@@ -4,9 +4,14 @@ const { isValidAddress, applyCors, sendJson, sendError } = require('../_lib/chai
 // GET /api/transactions/:address?type=token   -> BEP20 token transfers
 // GET /api/transactions/:address?type=internal -> internal txs
 //
-// Requires a free BscScan API key set as BSCSCAN_API_KEY in your
+// Requires a free Etherscan API key set as BSCSCAN_API_KEY in your
 // Vercel project's Environment Variables. Get one at:
-// https://bscscan.com/myapikey
+// https://etherscan.io/myapikey
+// (BscScan's standalone V1 API is deprecated — Etherscan now serves all
+// 60+ EVM chains, including BSC, through one unified V2 API selected via
+// the `chainid` parameter. An old BscScan-issued key still works here.)
+const BSC_CHAIN_ID = 56;
+
 module.exports = async (req, res) => {
   applyCors(req, res);
   if (req.method === 'OPTIONS') return res.status(200).end();
@@ -26,7 +31,7 @@ module.exports = async (req, res) => {
     return sendError(
       res,
       500,
-      'Server is missing BSCSCAN_API_KEY. Add it in Vercel > Project Settings > Environment Variables (get a free key at https://bscscan.com/myapikey).'
+      'Server is missing BSCSCAN_API_KEY. Add it in Vercel > Project Settings > Environment Variables (get a free key at https://etherscan.io/myapikey).'
     );
   }
 
@@ -38,6 +43,7 @@ module.exports = async (req, res) => {
   const action = actionMap[type] || 'txlist';
 
   const params = new URLSearchParams({
+    chainid: String(BSC_CHAIN_ID),
     module: 'account',
     action,
     address,
@@ -50,12 +56,12 @@ module.exports = async (req, res) => {
   });
 
   try {
-    const url = `https://api.bscscan.com/api?${params.toString()}`;
+    const url = `https://api.etherscan.io/v2/api?${params.toString()}`;
     const response = await fetch(url);
     const data = await response.json();
 
     if (data.status !== '1' && data.message !== 'No transactions found') {
-      return sendError(res, 502, 'BscScan API error', { detail: data.message || data.result });
+      return sendError(res, 502, 'Etherscan API error', { detail: data.message || data.result });
     }
 
     sendJson(res, 200, {
